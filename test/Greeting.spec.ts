@@ -10,7 +10,7 @@ import { ethers } from "ethers";
 chai.use(chaiAsPromised);
 const { expect } = chai;
 
-describe("Tournament unit tests", async () => {
+describe("Greeting unit tests", async () => {
   let greeting: ethers.Contract,
     linkToken: ethers.Contract,
     vrfCoordinator: ethers.Contract;
