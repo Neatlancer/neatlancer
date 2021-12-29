@@ -2,7 +2,9 @@
 import { DeployFunction } from "hardhat-deploy/dist/types";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 
-const DeployChainlinkMocks: DeployFunction = async (hre: HardhatRuntimeEnvironment) => {
+const DeployChainlinkMocks: DeployFunction = async (
+  hre: HardhatRuntimeEnvironment
+) => {
   const { deploy, log } = hre.deployments;
   const { deployer } = await hre.getNamedAccounts();
   const chainId = await hre.getChainId();

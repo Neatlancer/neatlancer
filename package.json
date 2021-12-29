@@ -6,10 +6,10 @@
     "contract:coverage": "npx hardhat coverage",
     "contract:compile": "npx hardhat compile",
     "contract:size": "npx hardhat size-contracts",
-    "contract:serve": "npx hardhat node --export app/src/contracts.json",
-    "contract:deploy": "npx hardhat deploy --network localhost --tags local --export app/src/contracts.json",
+    "contract:serve": "npx hardhat node --export web/contracts.json",
+    "contract:deploy": "npx hardhat deploy --network localhost --tags local --export web/contracts.json",
     "contract:update": "npx hardhat run scripts/update.ts --network mainnet",
-    "contract:deploy-mumbai": "npx hardhat deploy --network mumbai --export app/src/contracts.json",
+    "contract:deploy-mumbai": "npx hardhat deploy --network mumbai --export web/contracts.json",
     "contract:deploy-prod": "npx hardhat deploy --network mainnet"
   },
   "devDependencies": {
