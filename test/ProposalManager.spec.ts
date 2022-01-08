@@ -22,7 +22,7 @@ describe("ProposalManager unit tests", async () => {
         paymentDate: new Date().getTime(),
       },
     ];
-    const { firstClient } = await hre.getNamedAccounts();
+    const { firstClient, deployer } = await hre.getNamedAccounts();
     await proposalManager.createProposal(
       new Date().getTime(),
       firstClient,
@@ -31,6 +31,7 @@ describe("ProposalManager unit tests", async () => {
       paymentSchedule
     );
 
-    expect(await proposalManager.paymentsFor(0)).to.eq(1);
+    console.log(await proposalManager.getProposalsBy(deployer));
+    expect((await proposalManager.getPaymentsFor(0)).length).to.be.equal(1);
   });
 });

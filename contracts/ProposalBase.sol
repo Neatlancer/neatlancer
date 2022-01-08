@@ -31,16 +31,16 @@ contract ProposalBase {
         proposals[proposalId].paymentCount++;
     }
 
-    function paymentsFor(uint _proposalId) public view returns (Payment[] memory) {
-        Payment[] memory paymentsFor = new Payment[](ownerToProposalCount[_proposer]);
+    function getPaymentsFor(uint _proposalId) public view returns (Payment[] memory) {
+        Payment[] memory paymentsArr = new Payment[](proposals[_proposalId].paymentCount);
         uint counter = 0;
-        for (uint i = 0; i <= proposalIds; i++) {
-            if (proposals[i].proposer == _proposer) {
-                proposalsBy[counter] = proposals[i];
+        for (uint i = 0; i < payments.length; i++) {
+            if (payments[i].proposalId == _proposalId) {
+                paymentsArr[counter] = payments[i];
                 counter++;
             }
         }
-        return proposalsBy;
+        return paymentsArr;
     }   
 
     function makePayment(uint proposalId, uint _paymentId, uint _date) public payable {
