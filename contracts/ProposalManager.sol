@@ -27,7 +27,6 @@ contract ProposalManager is ProposalBase {
     }
 
     function getProposalsBy(address _proposer) public view returns (Proposal[] memory) {
-        require(ownerToProposalCount[_proposer] > 0, "account has no proposals");
         Proposal[] memory proposalsBy = new Proposal[](ownerToProposalCount[_proposer]);
         uint counter = 0;
         for (uint i = 0; i < proposals.length; i++) {
