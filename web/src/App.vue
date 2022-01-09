@@ -1,14 +1,18 @@
 <script setup lang="ts">
 // This starter template is using Vue 3 <script setup> SFCs
 // Check out https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup
+import { MoralisProvider, AuthState, DappProvider } from 'vue-ethers';
 import CreateProposal from './components/CreateProposal.vue'
-import { initProvider } from "./composables/useEthAuth";
-initProvider();
+import { config } from './config';
+import { contracts } from "../contracts.json"
+const provider = MoralisProvider(AuthState, config);
+
 </script>
 
 <template>
-  <img alt="Vue logo" src="./assets/logo.png" />
-  <CreateProposal msg="Hello Vue 3 + TypeScript + Vite" />
+  <DappProvider :provider="provider" :config="config" :contracts="contracts">
+    <CreateProposal msg="Hello Vue 3 + TypeScript + Vite" />
+  </DappProvider>
 </template>
 
 <style>
