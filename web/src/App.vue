@@ -5,23 +5,14 @@ import { MoralisProvider, AuthState, DappProvider } from 'vue-ethers';
 import CreateProposal from './components/CreateProposal.vue'
 import { config } from './config';
 import { contracts } from "../contracts.json"
+import LandingHeader from './layout/LandingHeader.vue';
 const provider = MoralisProvider(AuthState, config);
 
 </script>
 
 <template>
   <DappProvider :provider="provider" :config="config" :contracts="contracts">
+    <LandingHeader />
     <CreateProposal msg="Hello Vue 3 + TypeScript + Vite" />
   </DappProvider>
 </template>
-
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
-</style>
