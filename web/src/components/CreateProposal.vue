@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { ethers } from "ethers";
 import {  reactive, watchEffect } from "vue";
-import { useContract, getProvider, ProviderState, useEthAuth } from "vue-ethers";
+import { useContract, ProviderState, useEthAuth } from "vue-ethers";
+import { AtButton, AtInput } from "atmosphere-ui";
 
-const provider = getProvider();
-const proposalManager = useContract("ProposalManager", provider);
+const proposalManager = useContract("ProposalManager");
 const { login, AuthState } = useEthAuth();
 defineProps<{ msg: string }>();
 
@@ -43,19 +43,17 @@ const state = reactive({
 });
 
 const fetchProposals = async () => {
-  console.log(ProviderState.account);
-  try {
     const proposals = await proposalManager?.getProposalsBy(ProviderState.account);
     state.proposals = proposals;
     state.proposalCount = proposals.length;
-  } catch (err) {
-    console.error(err);
-  }
 };
 
 watchEffect(() => {
   if (ProviderState.account) {
     fetchProposals();
+  } else {
+    state.proposals = [];
+    state.proposalCount = 0;
   }
 });
 
@@ -63,27 +61,18 @@ watchEffect(() => {
 
 <template>
 <div class="text-center">
-  <h1>{{ msg }}</h1>
-  <div>
-  {{ state.proposalCount }} Proposals
-  </div>
-  <div v-for="proposal in state.proposals">
-    {{ proposal }}
-  </div>
-  <form  v-if="AuthState.user"  @submit.prevent="onSubmit()">
-    <input v-model="form.address">
-    <button
-      @click="onSubmit()"
-      class="px-5 py-2 text-white bg-blue-400 rounded-md hover:bg-blue-500"> 
-      Create Proposal
-    </button>
+  <form  v-if="AuthState.user"  @submit.prevent="onSubmit()" class="max-w-xl mx-auto">
+    <div class="flex px-5">
+      <AtInput v-model="form.address" class="rounded-r-none focus:shadow-primary focus:ring-primary" />
+      <AtButton class="w-64 text-white rounded-l-none bg-primary"> Create Proposal</AtButton>
+    </div>
   </form>
-  <button 
+  <AtButton 
     v-else
     @click="login()"
-    class="px-5 py-2 text-white bg-blue-400 rounded-md hover:bg-blue-500"> 
+    class="text-white bg-primary"> 
     Connect
-  </button>
+  </AtButton>
 </div>
 </template>
 
