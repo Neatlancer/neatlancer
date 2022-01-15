@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { ethers } from "ethers";
 import {  reactive, watchEffect } from "vue";
-import { useContract, ProviderState, useEthAuth } from "vue-ethers";
-import { AtButton, AtInput } from "atmosphere-ui";
+import { useContract, ProviderState, useEthAuth, AddressInput } from "vue-ethers";
+import { AtButton } from "atmosphere-ui";
+import ProposalForm from "./proposals/ProposalForm.vue";
 
 const proposalManager = useContract("ProposalManager");
 const { login, AuthState } = useEthAuth();
@@ -10,6 +11,10 @@ defineProps<{ msg: string }>();
 
 const form = reactive({
   address: ""
+});
+
+const proposalForm = reactive({
+  client: ""
 });
 
 const createProposal = async (proposal: string) => {
@@ -34,7 +39,8 @@ const createProposal = async (proposal: string) => {
 };
 
 const onSubmit = () => {
-  createProposal("test");
+  proposalForm.client = form.address;
+  form.address = "";
 };
 
 const state = reactive({
@@ -62,10 +68,11 @@ watchEffect(() => {
 <template>
 <div class="text-center">
   <form  v-if="AuthState.user"  @submit.prevent="onSubmit()" class="max-w-xl mx-auto">
-    <div class="flex px-5">
-      <AtInput v-model="form.address" class="rounded-r-none focus:shadow-primary focus:ring-primary" />
+    <div class="flex px-5" v-if="!proposalForm.client">
+      <AddressInput v-model.lazy="form.address" class="rounded-r-none focus:shadow-primary focus:ring-primary" />
       <AtButton class="w-64 text-white rounded-l-none bg-primary"> Create Proposal</AtButton>
     </div>
+    <ProposalForm :address="proposalForm.client" v-if="proposalForm.client" />
   </form>
   <AtButton 
     v-else
