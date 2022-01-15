@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "atmosphere-ui": "^0.4.4",
+    "atmosphere-ui": "^0.4.7",
     "ethers": "^5.5.2",
     "exact-math": "^2.2.3",
     "vue": "^3.2.25"

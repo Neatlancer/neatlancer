@@ -1,26 +1,37 @@
 <script lang="ts" setup>
-import { AtField, AtInput, AtButton, useForm } from "atmosphere-ui";
+import { AtField, AtInput, AtButton, useForm, AtDateSelect } from "atmosphere-ui";
 import { computed } from "vue";
 import { Address } from "vue-ethers";
 import exactMath from "exact-math";
 import ProposalSummaryItem from "./ProposalSummaryItem.vue";
 
-defineProps({
+const props = defineProps({
     address: {
         type: String,
         required: true,
     },
 });
 
+const emit = defineEmits(['submit']);
+
 const form = useForm({
-    paymentSchedule: [],
+    client: props.address,
     services: [{
         name: '',
         description: '',
         price: 0,
         qty: 1,
     }],
+    paymentSchedule: [{
+        amount: '',
+        date: '',
+        status: 0,
+    }],
 });
+
+const saveProposal = async () => {
+    emit('submit', form.data());
+};
 
 interface IService {
     name: string;
@@ -57,7 +68,10 @@ const addService = () => {
 
 <template>
 <div class="text-left text-gray-600">
-    <h1 class="text-3xl font-bold">New Proposal</h1>
+    <div class="flex justify-between">
+        <h1 class="text-3xl font-bold">New Proposal</h1>
+        <AtButton @click="saveProposal">Create Proposal</AtButton>
+    </div>
     <div class="flex px-5 py-10 mt-5 text-white bg-teal-400 rounded-md">
         <span class="font-bold">Client:</span> 
         <Address :address="address" :size="4" /> </div>
@@ -97,25 +111,22 @@ const addService = () => {
     <div class="mt-10 text-center">
         <h4 class="text-xl font-bold text-left">Payment Schedule </h4>
         <div class="flex mt-2 border-b-2 border-gray-400">
-            <div v-for="col in ['Service', 'Qty', 'Price', 'Total']" class="w-full">
+            <div v-for="col in ['Amount', 'When', 'status']" class="w-full">
                 {{ col}}
             </div>
         </div>
-        <div class="flex py-2 space-x-1 border-b" v-for="service in form.services">
-            <AtField field="name" label="" class="w-full">
-                <AtInput v-model="service.name" class="border-none shadow-none" placeholder="Service name"/>
+        <div class="flex py-2 space-x-1 border-b" v-for="payment in form.paymentSchedule">
+            <AtField field="amount" label="" class="w-full">
+                <AtInput v-model="payment.amount" class="border-none shadow-none" placeholder="Service name"/>
             </AtField>
-            <AtField field="qty" label="" class="w-full">
-                <AtInput v-model="service.qty" class="border-none shadow-none" />
-            </AtField>
-            <AtField field="price" label="" class="w-full">
-                <AtInput v-model="service.price" class="border-none shadow-none" />
+            <AtField field="date" label="" class="w-full">
+                <AtDateSelect v-model="payment.date" class="border-none shadow-none" />
             </AtField>
             <AtField field="total" label="" class="w-full text-center">
-                {{ service.price * service.qty }}
+                Upcomming
             </AtField>
         </div>
-        <AtButton class="font-bold text-primary" @click.prevent="addService">Add item</AtButton>
+        <AtButton class="font-bold text-primary" @click.prevent="addPayment">Add payment</AtButton>
     </div>
 </div>
 </template>

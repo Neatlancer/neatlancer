@@ -67,12 +67,12 @@ watchEffect(() => {
 
 <template>
 <div class="text-center">
-  <form  v-if="AuthState.user"  @submit.prevent="onSubmit()" class="max-w-xl mx-auto">
+  <form v-if="AuthState.user"  @submit.prevent="onSubmit()" class="max-w-xl mx-auto">
     <div class="flex px-5" v-if="!proposalForm.client">
       <AddressInput v-model.lazy="form.address" class="rounded-r-none focus:shadow-primary focus:ring-primary" />
       <AtButton class="w-64 text-white rounded-l-none bg-primary"> Create Proposal</AtButton>
     </div>
-    <ProposalForm :address="proposalForm.client" v-if="proposalForm.client" />
+    <ProposalForm :address="proposalForm.client" v-if="proposalForm.client" @submit="createProposal" />
   </form>
   <AtButton 
     v-else
