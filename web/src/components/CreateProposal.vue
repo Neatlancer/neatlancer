@@ -17,21 +17,14 @@ const proposalForm = reactive({
   client: ""
 });
 
-const createProposal = async (proposal: string) => {
-  const paymentSchedule = [
-    {
-      amount: ethers.utils.parseEther("1"),
-      paymentDate: new Date().getTime(),
-    },
-  ];
-
+const createProposal = async (proposal: IProposal) => {
   if (!ProviderState.signer) return; 
   const proposalId = await proposalManager?.connect(ProviderState.signer).createProposal(
     new Date().getTime(),
-    form.address,
+    proposal.address,
     "Neatlancer",
     "Project for blockchain",
-    paymentSchedule
+    proposal.paymentSchedule
 
   );
   await fetchProposals();
@@ -67,13 +60,13 @@ watchEffect(() => {
 
 <template>
 <div class="text-center">
-  <form v-if="AuthState.user"  @submit.prevent="onSubmit()" class="max-w-xl mx-auto">
-    <div class="flex px-5" v-if="!proposalForm.client">
+  <div v-if="AuthState.user" class="max-w-xl mx-auto">
+    <form class="flex px-5" v-if="!proposalForm.client" @submit.prevent="onSubmit()">
       <AddressInput v-model.lazy="form.address" class="rounded-r-none focus:shadow-primary focus:ring-primary" />
       <AtButton class="w-64 text-white rounded-l-none bg-primary"> Create Proposal</AtButton>
-    </div>
+    </form>
     <ProposalForm :address="proposalForm.client" v-if="proposalForm.client" @submit="createProposal" />
-  </form>
+  </div>
   <AtButton 
     v-else
     @click="login()"
