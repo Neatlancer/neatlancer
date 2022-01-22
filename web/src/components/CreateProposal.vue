@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { ethers } from "ethers";
 import {  reactive, watchEffect } from "vue";
 import { useContract, ProviderState, useEthAuth, AddressInput } from "vue-ethers";
 import { AtButton } from "atmosphere-ui";
 import ProposalForm from "./proposals/ProposalForm.vue";
-
+import { IProposal } from "../types";
 const proposalManager = useContract("ProposalManager");
 const { login, AuthState } = useEthAuth();
 defineProps<{ msg: string }>();
@@ -17,23 +16,37 @@ const proposalForm = reactive({
   client: ""
 });
 
-const createProposal = async (proposal: IProposal) => {
+const createProposal = async (newProposal: IProposal) => {
   if (!ProviderState.signer) return; 
-  const proposalId = await proposalManager?.connect(ProviderState.signer).createProposal(
-    new Date().getTime(),
-    proposal.address,
-    "Neatlancer",
-    "Project for blockchain",
-    proposal.paymentSchedule
+  try {
+    const proposalId = await proposalManager?.connect(ProviderState.signer).createProposal(
+      new Date().getTime(),
+      newProposal.client,
+      "Neatlancer",
+      "Project for blockchain",
+      newProposal.paymentSchedule.map(payment => {
+        return {
+          amount: payment.amount,
+          paymentDate: new Date(payment.date).getTime(),
+          status: Number(payment.status)
+        };
+      }),
+    );
+    return proposalId;
+  } catch (error) {
+    console.error(error);
+  }
 
-  );
-  await fetchProposals();
-  return proposalId;
 };
 
 const onSubmit = () => {
   proposalForm.client = form.address;
   form.address = "";
+};
+
+const onReset = () => {
+  form.address = "";
+  proposalForm.client = "";
 };
 
 const state = reactive({
@@ -65,7 +78,7 @@ watchEffect(() => {
       <AddressInput v-model.lazy="form.address" class="rounded-r-none focus:shadow-primary focus:ring-primary" />
       <AtButton class="w-64 text-white rounded-l-none bg-primary"> Create Proposal</AtButton>
     </form>
-    <ProposalForm :address="proposalForm.client" v-if="proposalForm.client" @submit="createProposal" />
+    <ProposalForm :address="proposalForm.client" v-if="proposalForm.client" @submit="createProposal" @cancel="onReset" />
   </div>
   <AtButton 
     v-else

@@ -464,6 +464,11 @@
                   "internalType": "uint256",
                   "name": "amount",
                   "type": "uint256"
+                },
+                {
+                  "internalType": "uint32",
+                  "name": "status",
+                  "type": "uint32"
                 }
               ],
               "internalType": "struct ProposalManager.PaymentSchedule[]",

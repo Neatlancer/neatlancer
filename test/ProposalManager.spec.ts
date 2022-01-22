@@ -20,6 +20,7 @@ describe("ProposalManager unit tests", async () => {
       {
         amount: ethers.utils.parseEther("1"),
         paymentDate: new Date().getTime(),
+        status: Number(true),
       },
     ];
     const { firstClient, deployer } = await hre.getNamedAccounts();

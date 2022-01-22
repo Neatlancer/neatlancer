@@ -4,6 +4,7 @@ import { computed } from "vue";
 import { Address } from "vue-ethers";
 import exactMath from "exact-math";
 import ProposalSummaryItem from "./ProposalSummaryItem.vue";
+import { IPayment, IService } from "../../types";
 
 const props = defineProps({
     address: {
@@ -12,7 +13,7 @@ const props = defineProps({
     },
 });
 
-const emit = defineEmits(['submit']);
+const emit = defineEmits(['submit', 'cancel']);
 
 const form = useForm({
     client: props.address,
@@ -33,18 +34,10 @@ const saveProposal = async () => {
     emit('submit', form.data());
 };
 
-interface IService {
-    name: string;
-    description: string;
-    price: number;
-    qty: number;
-}
-
-interface IPayment {
-    amount: number;
-    date: string;
-    status: boolean;
-}
+const cancel = () => {
+    form.reset();
+    emit('cancel');
+};
 
 const grandTotal = computed(() => {
     const subtotal = form.services.reduce((sum: number, service: IService ) => {
@@ -98,13 +91,22 @@ const addPayment = () => {
         status: 0,
     });
 };
+
+const checkAmountFor = (index: number) => {
+    if (!form.paymentSchedule[index].amount) {
+        form.paymentSchedule[index].amount = paymentTotal.value.pending;
+    }
+};
 </script>
 
 <template>
 <div class="text-left text-gray-600">
     <div class="flex justify-between">
-        <h1 class="text-3xl font-bold">New Proposal</h1>
-        <AtButton class="bg-primary text-white" @click.prevent="saveProposal()">Create Proposal</AtButton>
+        <h1 class="text-xl font-bold">New Proposal</h1>
+        <div class="flex space-x-2">
+            <AtButton class="bg-primary text-white" @click.prevent="saveProposal()">Create Proposal</AtButton>
+            <AtButton class="font-bold bg-gray-300" @click.prevent="cancel()">Cancel</AtButton>
+        </div>
     </div>
     <div class="flex px-5 py-10 mt-5 text-white bg-teal-400 rounded-md">
         <span class="font-bold">Client:</span> 
@@ -149,9 +151,14 @@ const addPayment = () => {
                 {{ col}}
             </div>
         </div>
-        <div class="flex py-2 space-x-1 border-b" v-for="payment in form.paymentSchedule">
+        <div class="flex py-2 space-x-1 border-b" v-for="(payment, index) in form.paymentSchedule">
             <AtField field="amount" label="" class="w-full">
-                <AtInput v-model="payment.amount" class="border-none shadow-none" placeholder="Service name"/>
+                <AtInput 
+                    v-model="payment.amount" 
+                    class="border-none shadow-none" 
+                    placeholder="Service name"
+                    :click="checkAmountFor(index)"
+                />
             </AtField>
             <AtField field="date" label="" class="w-full">
                 <AtDateSelect v-model="payment.date" class="border-none shadow-none" />

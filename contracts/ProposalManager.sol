@@ -8,6 +8,7 @@ contract ProposalManager is ProposalBase {
     struct PaymentSchedule {
         uint paymentDate;
         uint amount;
+        uint32 status;
     }
 
     uint public proposalIds = 0;
