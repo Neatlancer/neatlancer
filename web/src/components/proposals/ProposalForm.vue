@@ -23,7 +23,7 @@ const form = useForm({
         qty: 1,
     }],
     paymentSchedule: [{
-        amount: '',
+        amount: 0,
         date: '',
         status: 0,
     }],
@@ -40,6 +40,12 @@ interface IService {
     qty: number;
 }
 
+interface IPayment {
+    amount: number;
+    date: string;
+    status: boolean;
+}
+
 const grandTotal = computed(() => {
     const subtotal = form.services.reduce((sum: number, service: IService ) => {
         sum += exactMath.mul(service.price, service.qty);
@@ -47,12 +53,32 @@ const grandTotal = computed(() => {
     }, 0);
 
     const taxes = 0;
-    console.log(subtotal);
 
     return {
         subtotal,
         taxes,
         total: exactMath.add(subtotal, taxes),
+    }
+});
+
+const paymentTotal = computed(() => {
+    const scheduled = form.paymentSchedule.reduce((sum: number, payment: IPayment ) => {
+        sum = exactMath.add(sum, payment.amount);
+        return sum;
+    }, 0);
+
+    const paid = form.paymentSchedule.reduce((sum: number, payment: IPayment ) => {
+        if (payment.status) {
+            sum = exactMath.add(sum, payment.amount);
+        }
+        return sum;
+    }, 0);
+
+
+    return {
+        scheduled,
+        paid,
+        pending: exactMath.sub(scheduled, paid),
     }
 });
 
@@ -64,13 +90,21 @@ const addService = () => {
         qty: 1,
     });
 };
+
+const addPayment = () => {
+    form.paymentSchedule.push({
+        amount: paymentTotal.value.pending,
+        date: '',
+        status: 0,
+    });
+};
 </script>
 
 <template>
 <div class="text-left text-gray-600">
     <div class="flex justify-between">
         <h1 class="text-3xl font-bold">New Proposal</h1>
-        <AtButton @click="saveProposal">Create Proposal</AtButton>
+        <AtButton class="bg-primary text-white" @click.prevent="saveProposal()">Create Proposal</AtButton>
     </div>
     <div class="flex px-5 py-10 mt-5 text-white bg-teal-400 rounded-md">
         <span class="font-bold">Client:</span> 
@@ -122,7 +156,7 @@ const addService = () => {
             <AtField field="date" label="" class="w-full">
                 <AtDateSelect v-model="payment.date" class="border-none shadow-none" />
             </AtField>
-            <AtField field="total" label="" class="w-full text-center">
+            <AtField field="total" label="" class="w-full min-w-12 text-center">
                 Upcomming
             </AtField>
         </div>
